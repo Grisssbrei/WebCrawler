@@ -45,9 +45,32 @@ $links = $crawl->get('links');
 <body>
 <h2>Webcrawler</h2>
 <?php
+// Verbindung zur Datenbank herstellen
+$mysqli = mysqli_connect('127.0.0.1', 'root', '', 'webcrawler');
+
+if (!$mysqli){
+    die("Verbindung fehlgeschlagen: " . mysqli_connect_error());
+}
+
+// Eingegebener Link wird in der Tabelle links gespeichert
+$website = $_POST['website'];
+$sql = "INSERT INTO links (link)
+		VALUES ('$website')";
+if ($mysqli->query($sql) === FALSE) {
+    echo "Fehler: " . $sql . "<br>" . $mysqli->error;
+}
+
 foreach($links as $l) {
     if (substr($l,0,7)!='http://')
         echo "<br>Link: $crawl->base/$l";
+        // Alle gefunden Links werden in der Datenbank unterlinks gespeichert
+        // Foreign Key zur Tabelle links wird erstellt
+        $link = "$crawl->base/$l";
+        $sql = "INSERT INTO unterlinks (unterlink, link_id)
+                VALUES ('$link', (select id FROM links where link = '$website'))";
+        if ($mysqli->query($sql) === FALSE) {
+            echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
+        }
 }
 ?>
 </body>
