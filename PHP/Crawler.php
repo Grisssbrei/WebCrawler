@@ -1,3 +1,11 @@
+<html>
+<body>
+<form action="Crawler.php" method="post">
+    <p>Website: <input type="text" name="website" /></p>
+    <p><button type="submit">Abschicken</button></p>
+</form><br><br>
+</body>
+</html>
 <?php
 class Crawler {
     protected $markup = '';
@@ -29,7 +37,7 @@ class Crawler {
     }
 }
 }
-$crawl = new Crawler('http://www.dhbw-heidenheim.de');
+$crawl = new Crawler($_POST['website']);
 $images = $crawl->get('images');
 $links = $crawl->get('links');
 ?>
