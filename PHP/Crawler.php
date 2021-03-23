@@ -35,11 +35,10 @@ class Crawler {
         preg_match_all('/href=\"(.*?)\"/i', $this->markup, $links);
         return !empty($links[1]) ? $links[1] : FALSE;
     }
+
 }
 }
 $crawl = new Crawler($_POST['website']);
-$images = $crawl->get('images');
-$links = $crawl->get('links');
 ?>
 <html>
 <body>
@@ -51,26 +50,43 @@ $mysqli = mysqli_connect('127.0.0.1', 'root', '', 'webcrawler');
 if (!$mysqli){
     die("Verbindung fehlgeschlagen: " . mysqli_connect_error());
 }
+Crawli($mysqli, $crawl);
 
-// Eingegebener Link wird in der Tabelle links gespeichert
-$website = $_POST['website'];
-$sql = "INSERT INTO links (link)
+function Crawli($mysqli, $crawl){
+
+    $images = $crawl->get('images');
+    $links = $crawl->get('links');
+    $website = $_POST['website'];
+
+    $sql = "INSERT INTO links (link)
 		VALUES ('$website')";
-if ($mysqli->query($sql) === FALSE) {
-    echo "Fehler: " . $sql . "<br>" . $mysqli->error;
-}
+    // Eingegebener Link wird in der Tabelle links gespeichert
+    if ($mysqli->query($sql) === FALSE) {
+        echo "Fehler: " . $sql . "<br>" . $mysqli->error;
+    }
 
-foreach($links as $l) {
-    if (substr($l,0,7)!='http://')
-        echo "<br>Link: $crawl->base/$l";
+    foreach ($links as $l) {
+
+        if (substr($l, 0, 7) != 'http://')
+            echo "<br>Link: $crawl->base/$l";
+
         // Alle gefunden Links werden in der Datenbank unterlinks gespeichert
         // Foreign Key zur Tabelle links wird erstellt
+
         $link = "$crawl->base/$l";
         $sql = "INSERT INTO unterlinks (unterlink, link_id)
-                VALUES ('$link', (select id FROM links where link = '$website'))";
+                    VALUES ('$link', (select id FROM links where link = '$website'))";
+
         if ($mysqli->query($sql) === FALSE) {
             echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
         }
+        //$sql1 = serialize($mysqli->query("SELECT unterlink FROM unterlinks"));
+
+        //if (strcmp($sql1, $l) !== 0){
+          //Crawli($mysqli, $crawl = new Crawler($_POST($l)));
+        //}
+
+    }
 }
 ?>
 </body>
