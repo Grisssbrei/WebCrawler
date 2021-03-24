@@ -58,11 +58,18 @@ function Crawli($mysqli, $crawl){
     $links = $crawl->get('links');
     $website = $_POST['website'];
 
-    $sql = "INSERT INTO links (link)
+    $sql = "SELECT * FROM links WHERE link = '$website'";
+    $result = $mysqli->query($sql);
+    if ($result->num_rows > 0){
+        echo "<br>Schon in der Datenbank";
+    }
+    else{
+        $sql = "INSERT INTO links (link)
 		VALUES ('$website')";
-    // Eingegebener Link wird in der Tabelle links gespeichert
-    if ($mysqli->query($sql) === FALSE) {
-        echo "Fehler: " . $sql . "<br>" . $mysqli->error;
+        // Eingegebener Link wird in der Tabelle links gespeichert
+        if ($mysqli->query($sql) === FALSE) {
+            echo "Fehler: " . $sql . "<br>" . $mysqli->error;
+        }
     }
 
     foreach ($links as $l) {
@@ -74,17 +81,30 @@ function Crawli($mysqli, $crawl){
         // Foreign Key zur Tabelle links wird erstellt
 
         $link = "$crawl->base/$l";
-        $sql = "INSERT INTO unterlinks (unterlink, link_id)
+        $sql = "SELECT * FROM unterlinks WHERE unterlink = '$link'";
+        $result = $mysqli->query($sql);
+        if ($result->num_rows > 0){
+            echo "<br>Schon in der Datenbank";
+        }
+        else{
+            $sql = "INSERT INTO unterlinks (unterlink, link_id)
                     VALUES ('$link', (select id FROM links where link = '$website'))";
 
-        if ($mysqli->query($sql) === FALSE) {
-            echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
+            if ($mysqli->query($sql) === FALSE) {
+                echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
+            }
         }
+
+
+
+
         //$sql1 = serialize($mysqli->query("SELECT unterlink FROM unterlinks"));
 
         //if (strcmp($sql1, $l) !== 0){
           //Crawli($mysqli, $crawl = new Crawler($_POST($l)));
         //}
+
+
 
     }
 }
