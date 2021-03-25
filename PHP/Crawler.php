@@ -52,27 +52,26 @@ if (!$mysqli){
 }
 $website = $_POST['website'];
 
+$sql = "SELECT * FROM links WHERE link = '$website'";
+$result = $mysqli->query($sql);
+if ($result->num_rows > 0){
+    echo "<br>Schon in der Datenbank";
+}
+else{
+    $sql = "INSERT INTO links (link)
+		VALUES ('$website')";
+    // Eingegebener Link wird in der Tabelle links gespeichert
+    if ($mysqli->query($sql) === FALSE) {
+        echo "Fehler: " . $sql . "<br>" . $mysqli->error;
+    }
+}
+
 Crawli($mysqli, $website);
 function Crawli($mysqli, $website){
 
     $crawl = new Crawler($website);
     $images = $crawl->get('images');
     $links = $crawl->get('links');
-
-
-    $sql = "SELECT * FROM links WHERE link = '$website'";
-    $result = $mysqli->query($sql);
-    if ($result->num_rows > 0){
-        echo "<br>Schon in der Datenbank";
-    }
-    else{
-        $sql = "INSERT INTO links (link)
-		VALUES ('$website')";
-        // Eingegebener Link wird in der Tabelle links gespeichert
-        if ($mysqli->query($sql) === FALSE) {
-            echo "Fehler: " . $sql . "<br>" . $mysqli->error;
-        }
-    }
 
     foreach ($links as $l) {
 
