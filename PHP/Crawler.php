@@ -38,7 +38,7 @@ class Crawler {
 
 }
 }
-$crawl = new Crawler($_POST['website']);
+
 ?>
 <html>
 <body>
@@ -50,13 +50,15 @@ $mysqli = mysqli_connect('127.0.0.1', 'root', '', 'webcrawler');
 if (!$mysqli){
     die("Verbindung fehlgeschlagen: " . mysqli_connect_error());
 }
-Crawli($mysqli, $crawl);
+$website = $_POST['website'];
 
-function Crawli($mysqli, $crawl){
+Crawli($mysqli, $website);
+function Crawli($mysqli, $website){
 
+    $crawl = new Crawler($website);
     $images = $crawl->get('images');
     $links = $crawl->get('links');
-    $website = $_POST['website'];
+
 
     $sql = "SELECT * FROM links WHERE link = '$website'";
     $result = $mysqli->query($sql);
@@ -93,16 +95,20 @@ function Crawli($mysqli, $crawl){
             if ($mysqli->query($sql) === FALSE) {
                 echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
             }
+
+            Crawli($mysqli, $l);
         }
 
 
 
 
-        //$sql1 = serialize($mysqli->query("SELECT unterlink FROM unterlinks"));
 
-        //if (strcmp($sql1, $l) !== 0){
-          //Crawli($mysqli, $crawl = new Crawler($_POST($l)));
-        //}
+
+
+
+
+
+
 
 
 
