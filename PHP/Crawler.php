@@ -73,45 +73,34 @@ function Crawli($mysqli, $website){
     $images = $crawl->get('images');
     $links = $crawl->get('links');
 
-    foreach ($links as $l) {
+    if ($links != null){
+        foreach ($links as $l) {
 
-        if (substr($l, 0, 7) != 'http://')
-            echo "<br>Link: $crawl->base/$l";
+            if (substr($l, 0, 7) != 'http://')
+                echo "<br>Link: $crawl->base/$l";
 
-        // Alle gefunden Links werden in der Datenbank unterlinks gespeichert
-        // Foreign Key zur Tabelle links wird erstellt
+            // Alle gefunden Links werden in der Datenbank unterlinks gespeichert
+            // Foreign Key zur Tabelle links wird erstellt
 
-        $link = "$crawl->base/$l";
-        $sql = "SELECT * FROM unterlinks WHERE unterlink = '$link'";
-        $result = $mysqli->query($sql);
-        if ($result->num_rows > 0){
-            echo "<br>Schon in der Datenbank";
-        }
-        else{
-            $sql = "INSERT INTO unterlinks (unterlink, link_id)
+            $link = "$crawl->base/$l";
+            $sql = "SELECT * FROM unterlinks WHERE unterlink = '$link'";
+            $result = $mysqli->query($sql);
+            if ($result->num_rows > 0){
+                echo "<br>Schon in der Datenbank";
+            }
+            else{
+                $sql = "INSERT INTO unterlinks (unterlink, link_id)
                     VALUES ('$link', (select id FROM links where link = '$website'))";
 
-            if ($mysqli->query($sql) === FALSE) {
-                echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
+                if ($mysqli->query($sql) === FALSE) {
+                    echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
+                }
+
+                Crawli($mysqli, $l);
             }
-
-            Crawli($mysqli, $l);
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
+
 }
 ?>
 </body>
