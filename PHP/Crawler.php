@@ -65,9 +65,10 @@ else{
         echo "Fehler: " . $sql . "<br>" . $mysqli->error;
     }
 }
+$websiteStart = $website;
 
-Crawli($mysqli, $website);
-function Crawli($mysqli, $website){
+Crawli($mysqli, $website, $websiteStart);
+function Crawli($mysqli, $website, $websiteStart){
 
     $crawl = new Crawler($website);
     $images = $crawl->get('images');
@@ -77,7 +78,7 @@ function Crawli($mysqli, $website){
         foreach ($links as $l) {
 
             if (substr($l, 0, 7) != 'http://')
-                echo "<br>Link: $crawl->base/$l";
+                echo "<br>Link: $crawl->base/$l <br>";
 
             // Alle gefunden Links werden in der Datenbank unterlinks gespeichert
             // Foreign Key zur Tabelle links wird erstellt
@@ -90,7 +91,7 @@ function Crawli($mysqli, $website){
             }
             else{
                 $sql = "INSERT INTO unterlinks (unterlink, link_id)
-                    VALUES ('$link', (select id FROM links where link = '$website'))";
+                    VALUES ('$link', (select id FROM links where link = '$websiteStart'))";
 
                 if ($mysqli->query($sql) === FALSE) {
                     echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
