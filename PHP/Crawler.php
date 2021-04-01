@@ -12,7 +12,8 @@ class Crawler {
     public $base = '';
     public function __construct($uri) {
         $this->base = $uri;
-        $this->markup = $this->getMarkup($uri);
+        $this->markup =$this->getMarkup($uri);
+
     }
     public function getMarkup($uri) {
         return file_get_contents($uri);
@@ -74,9 +75,10 @@ function Crawli($mysqli, $website, $websiteStart){
     $images = $crawl->get('images');
     $links = $crawl->get('links');
 
+
     if ($links != null){
         foreach ($links as $l) {
-
+            $l = substr($l, 1);
             if (substr($l, 0, 7) != 'http://')
                 echo "<br>Link: $crawl->base/$l <br>";
 
@@ -97,7 +99,7 @@ function Crawli($mysqli, $website, $websiteStart){
                     echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
                 }
 
-                Crawli($mysqli, $l);
+                Crawli($mysqli, $link, $websiteStart);
             }
         }
     }
