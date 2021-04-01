@@ -78,9 +78,15 @@ function Crawli($mysqli, $website, $websiteStart){
 
     if ($links != null){
         foreach ($links as $l) {
-            $l = substr($l, 1);
+            $firstChr = $l[0];
+            if ($firstChr != "h")
+                $l = substr($l, 1);
+
             if (substr($l, 0, 7) != 'http://')
-                echo "<br>Link: $crawl->base/$l <br>";
+                if ($firstChr != "h")
+                    echo "<br>Link: $crawl->base/$l <br>";
+                else
+                    echo"<br>Link: $l <br>";
 
             // Alle gefunden Links werden in der Datenbank unterlinks gespeichert
             // Foreign Key zur Tabelle links wird erstellt
@@ -92,14 +98,37 @@ function Crawli($mysqli, $website, $websiteStart){
                 echo "<br>Schon in der Datenbank";
             }
             else{
-                $sql = "INSERT INTO unterlinks (unterlink, link_id)
-                    VALUES ('$link', (select id FROM links where link = '$websiteStart'))";
+                if ($firstChr != "h")
+                    $sql = "INSERT INTO unterlinks (unterlink, link_id)
+                        VALUES ('$link', (select id FROM links where link = '$websiteStart'))";
+                else
+                    $sql = "INSERT INTO unterlinks (unterlink, link_id)
+                        VALUES ('$l', (select id FROM links where link = '$websiteStart'))";
 
                 if ($mysqli->query($sql) === FALSE) {
                     echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
                 }
+            }
+        }
+        // es werden nur unterlinks nach links untersucht, da sonst die Ausführungszeit massiv ansteigt
+        foreach ($links as $l){
+            if ($result->num_rows > 0){
+                echo "<br>Schon in der Datenbank";
+            }
+            else{
+                if ($firstChr != "h")
+                    $sql = "INSERT INTO unterlinks (unterlink, link_id)
+                        VALUES ('$link', (select id FROM links where link = '$websiteStart'))";
+                else
+                    $sql = "INSERT INTO unterlinks (unterlink, link_id)
+                        VALUES ('$l', (select id FROM links where link = '$websiteStart'))";
 
-                Crawli($mysqli, $link, $websiteStart);
+                if ($mysqli->query($sql) === FALSE) {
+                    echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
+                }
+                if ($firstChr != "h")
+                    Crawli($mysqli, $link, $websiteStart);
+
             }
         }
     }
