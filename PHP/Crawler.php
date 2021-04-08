@@ -172,6 +172,8 @@ function crawlWort($link) {
         $zeichen = array(".", ",", ";", ":", "{", "}", "<", ">", "#", "\"", "&#173;", "&160", "&173");
         $wort = str_replace($zeichen, "", $wort);
 
+        $wort = strtolower($wort);
+
         $wort = str_replace("&auml", "ä", $wort);
         $wort = str_replace("&ouml", "ö", $wort);
         $wort = str_replace("&uuml", "ü", $wort);
@@ -180,7 +182,7 @@ function crawlWort($link) {
         $wort = str_replace("&Uuml", "Ü", $wort);
         $wort = str_replace("&szlig", "ß", $wort);
 
-        $stoppwortliste = array("Wir", "Die", "In", "Das","and", "the", "of", "to", "einer", "Einer", "eine", "Eine", "eines", "einem", "einen", "der", "die", "das", "dass", "daß", "du", "er", "sie", "es", "was", "wer", "wie", "wir", "und", "oder", "ohne", "mit", "am", "im", "in", "aus", "auf", "ist", "sein", "war", "wird", "ihr", "ihre", "ihres", "ihnen", "ihrer", "als", "für", "von", "mit", "dich", "dir", "mich", "mir", "mein", "sein", "kein", "durch", "wegen", "wird", "sich", "bei", "beim", "noch", "den", "dem", "zu", "zur", "zum", "auf", "ein", "auch", "werden", "an", "des", "sein", "sind", "vor", "nicht", "sehr", "um", "unsere", "ohne", "so", "da", "nur", "diese", "dieser","diesem", "dieses", "nach", "über", "mehr", "hat", "bis", "uns", "unser", "unserer", "unserem", "unsers", "euch", "euers", "euer", "eurem", "ihr", "ihres", "ihrer", "ihrem", "alle", "vom");
+        $stoppwortliste = array("and", "the", "of", "to", "einer", "eine", "eines", "eines", "einem", "einen", "der", "die", "das", "dass", "daß", "du", "er", "sie", "es", "was", "wer", "wie", "wir", "und", "oder", "ohne", "mit", "am", "im", "in", "aus", "auf", "ist", "sein", "war", "wird", "ihr", "ihre", "ihres", "ihnen", "ihrer", "als", "für", "von", "mit", "dich", "dir", "mich", "mir", "mein", "sein", "kein", "durch", "wegen", "wird", "sich", "bei", "beim", "noch", "den", "dem", "zu", "zur", "zum", "auf", "ein", "auch", "werden", "an", "des", "sein", "sind", "vor", "nicht", "sehr", "um", "unsere", "ohne", "so", "da", "nur", "diese", "dieser","diesem", "dieses", "nach", "über", "mehr", "hat", "bis", "uns", "unser", "unserer", "unserem", "unsers", "euch", "euers", "euer", "eurem", "ihr", "ihres", "ihrer", "ihrem", "alle", "vom");
 
         if (!in_array($wort, $stoppwortliste)){
             if (!empty($wort))
