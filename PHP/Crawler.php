@@ -163,7 +163,7 @@ function crawlWort($link) {
     {
         $wort = trim($woerter[$x]);
         // Zeichen werden entfernt
-        $zeichen = array(".", ",", ";", ":", "{", "}", "<", ">", "#", "\"", "&#173;", "&160", "&173", "and", "the", "of", "to", "einer", "eine", "eines", "einem", "einen", "der", "die", "das", "dass", "daß", "du", "er", "sie", "es", "was", "wer", "wie", "wir", "und", "oder", "ohne", "mit", "am", "im", "in", "aus", "auf", "ist", "sein", "war", "wird", "ihr", "ihre", "ihres", "ihnen", "ihrer", "als", "für", "von", "mit", "dich", "dir", "mich", "mir", "mein", "sein", "kein", "durch", "wegen", "wird", "sich", "bei", "beim", "noch", "den", "dem", "zu", "zur", "zum", "auf", "ein", "auch", "werden", "an", "des", "sein", "sind", "vor", "nicht", "sehr", "um", "unsere", "ohne", "so", "da", "nur", "diese", "dieser","diesem", "dieses", "nach", "über", "mehr", "hat", "bis", "uns", "unser", "unserer", "unserem", "unsers", "euch", "euers", "euer", "eurem", "ihr", "ihres", "ihrer", "ihrem", "alle", "vom");
+        $zeichen = array(".", ",", ";", ":", "{", "}", "<", ">", "#", "\"", "&#173;", "&160", "&173");
         $wort = str_replace($zeichen, "", $wort);
 
         $wort = str_replace("&auml", "ä", $wort);
@@ -174,28 +174,27 @@ function crawlWort($link) {
         $wort = str_replace("&Uuml", "Ü", $wort);
         $wort = str_replace("&szlig", "ß", $wort);
 
-        if (!empty($wort))
-        {
-            $sql = "SELECT * FROM woerter WHERE wort = '$wort'";
-            $result = $mysqli->query($sql);
-            if ($result->num_rows > 0){
-            }
-            else{
-                $sql = "INSERT INTO woerter (wort)
-                VALUES ('$wort')";
-                // Eingegebener Link wird in der Tabelle links gespeichert
-                if ($mysqli->query($sql) === FALSE) {
-                    echo "Fehler: " . $sql . "<br>" . $mysqli->error;
-                }
-            }
+        $stoppwortliste = array("Wir", "Die", "In", "Das","and", "the", "of", "to", "einer", "Einer", "eine", "Eine", "eines", "einem", "einen", "der", "die", "das", "dass", "daß", "du", "er", "sie", "es", "was", "wer", "wie", "wir", "und", "oder", "ohne", "mit", "am", "im", "in", "aus", "auf", "ist", "sein", "war", "wird", "ihr", "ihre", "ihres", "ihnen", "ihrer", "als", "für", "von", "mit", "dich", "dir", "mich", "mir", "mein", "sein", "kein", "durch", "wegen", "wird", "sich", "bei", "beim", "noch", "den", "dem", "zu", "zur", "zum", "auf", "ein", "auch", "werden", "an", "des", "sein", "sind", "vor", "nicht", "sehr", "um", "unsere", "ohne", "so", "da", "nur", "diese", "dieser","diesem", "dieses", "nach", "über", "mehr", "hat", "bis", "uns", "unser", "unserer", "unserem", "unsers", "euch", "euers", "euer", "eurem", "ihr", "ihres", "ihrer", "ihrem", "alle", "vom");
 
-            $sql = "INSERT INTO zuordnung (unterlink_id, wort_id)
+        if (!in_array($wort, $stoppwortliste)){
+            if (!empty($wort))
+            {
+                $sql = "SELECT * FROM woerter WHERE wort = '$wort'";
+                $result = $mysqli->query($sql);
+                if ($result->num_rows > 0){
+                }
+                else{
+                    $sql = "INSERT INTO woerter (wort)
+                VALUES ('$wort')";
+                    // Eingegebener Link wird in der Tabelle links gespeichert
+                    $mysqli->query($sql);
+                }
+
+                $sql = "INSERT INTO zuordnung (unterlink_id, wort_id)
                 VALUES ((SELECT id FROM unterlinks WHERE unterlink = '$link'), (select id FROM woerter where wort = '$wort'))";
-            if ($mysqli->query($sql) === FALSE) {
-                echo "Fehler: " . $sql . "<br>" . $mysqli->error;
+                $mysqli->query($sql);
             }
         }
-
     }
 }
 
