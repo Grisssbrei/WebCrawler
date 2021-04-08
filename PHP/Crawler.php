@@ -75,6 +75,7 @@ function crawlLink(){
     $websiteStart = $website;
 
     Crawli($mysqli, $website, $websiteStart);
+    echo "<br>WebCrawler hat fertig<br>";
 }
 
 function Crawli($mysqli, $website, $websiteStart){
@@ -118,36 +119,11 @@ function Crawli($mysqli, $website, $websiteStart){
                 }
 
                 crawlWort($link);
-            }
-        }
-        // es werden nur unterlinks nach links untersucht, da sonst die Ausführungszeit massiv ansteigt
-        foreach ($links as $l){
-            $firstChr = $l[0];
-            $link = "$crawl->base/$l";
-            $sql = "SELECT * FROM unterlinks WHERE unterlink = '$link'";
-            $result = $mysqli->query($sql);
-            if ($result->num_rows > 0){
-
-            }
-            else{
-                if ($firstChr != "h")
-                    $sql = "INSERT INTO unterlinks (unterlink, link_id)
-                        VALUES ('$link', (select id FROM links where link = '$websiteStart'))";
-                else
-                    $sql = "INSERT INTO unterlinks (unterlink, link_id)
-                        VALUES ('$l', (select id FROM links where link = '$websiteStart'))";
-
-                if ($mysqli->query($sql) === FALSE) {
-                    echo "<br>Fehler: " . $sql . "<br>" . $mysqli->error;
-                }
                 if ($firstChr != "h")
                     Crawli($mysqli, $link, $websiteStart);
-            crawlWort($link);
             }
         }
     }
-
-    echo "<br>WebCrawler hat fertig<br>";
 
 }
 
