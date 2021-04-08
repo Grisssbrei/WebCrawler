@@ -123,6 +123,12 @@ function Crawli($mysqli, $website, $websiteStart){
                     Crawli($mysqli, $link, $websiteStart);
             }
         }
+        foreach ($links as $l) {
+            $firstChr = $l[0];
+            $link = "$crawl->base/$l";
+            if ($firstChr != "h")
+                Crawli($mysqli, $link, $websiteStart);
+        }
     }
 
 }
