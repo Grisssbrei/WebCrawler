@@ -122,6 +122,10 @@ function Crawli($mysqli, $website, $websiteStart){
         }
         // es werden nur unterlinks nach links untersucht, da sonst die Ausführungszeit massiv ansteigt
         foreach ($links as $l){
+            $firstChr = $l[0];
+            $link = "$crawl->base/$l";
+            $sql = "SELECT * FROM unterlinks WHERE unterlink = '$link'";
+            $result = $mysqli->query($sql);
             if ($result->num_rows > 0){
 
             }
