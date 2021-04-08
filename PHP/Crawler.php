@@ -1,13 +1,21 @@
 <html>
-<body>
+<body><br>
+<h2>Webcrawler</h2><br><hr><br>
 <form action="Crawler.php" method="post">
     <p>Website: <input type="text" name="website" /></p>
-    <input type="submit" name="link" value="Link crawlen" />
-</form><br><br>
+    <p><input type="submit" name="link" value="Link crawlen" /></p>
+</form><br><hr><br>
+<form action="Crawler.php" method="post">
+    <p align="center">Suchwort: <input type="text" name="wortsuche" /></p>
+    <p align="center"><input type="submit" name="suchenButton" value="Suche" /></p>
+</form><br><hr><br>
 </body>
 </html>
 
 <?php
+if(isset($_POST['suchenButton'])){
+    wortFilterung($_POST['wortsuche']);
+}
 class Crawler {
     protected $markup = '';
     public $base = '';
@@ -36,6 +44,7 @@ class Crawler {
     //preg_match_all('/<a([^>]+)\>(.*?)\<\/a\>/i', $this->markup, $links);
         preg_match_all('/href=\"(.*?)\"/i', $this->markup, $links);
         return !empty($links[1]) ? $links[1] : FALSE;
+
     }
 
 }
@@ -94,7 +103,7 @@ function Crawli($mysqli, $website, $websiteStart){
             $sql = "SELECT * FROM unterlinks WHERE unterlink = '$link'";
             $result = $mysqli->query($sql);
             if ($result->num_rows > 0){
-                echo "<br>Schon in der Datenbank";
+
             }
             else{
                 if ($firstChr != "h")
@@ -114,7 +123,7 @@ function Crawli($mysqli, $website, $websiteStart){
         // es werden nur unterlinks nach links untersucht, da sonst die Ausführungszeit massiv ansteigt
         foreach ($links as $l){
             if ($result->num_rows > 0){
-                echo "<br>Schon in der Datenbank";
+
             }
             else{
                 if ($firstChr != "h")
@@ -133,6 +142,8 @@ function Crawli($mysqli, $website, $websiteStart){
             }
         }
     }
+
+    echo "<br>WebCrawler hat fertig<br>";
 
 }
 
@@ -208,6 +219,21 @@ function crawlWort($link) {
     }
 }
 
+function wortFilterung($suchWort){
+    // Verbindung zur Datenbank herstellen
+    $mysqli = mysqli_connect('127.0.0.1', 'root', '', 'webcrawler');
+    $sql = "SELECT * FROM (woerter INNER JOIN zuordnung ON woerter.id = zuordnung.wort_id) INNER JOIN unterlinks ON unterlinks.id = zuordnung.unterlink_id WHERE woerter.wort = '$suchWort'";
+
+    echo "<br>Das Wort " . $suchWort . " befindet sich in folgenden Links:<br><br>";
+
+    $vorigerLink = "";
+
+    foreach ($mysqli->query($sql) as $item) {
+        if ($vorigerLink != $item['unterlink'])
+            echo "<br>" . $item['unterlink'] . "<br>";
+        $vorigerLink = $item['unterlink'];
+    }
+}
 
 
 if(array_key_exists('link',$_POST)){
@@ -215,11 +241,3 @@ if(array_key_exists('link',$_POST)){
 }
 
 ?>
-<html>
-<body>
-<h2>Webcrawler</h2>
-<?php
-
-?>
-</body>
-</html>
